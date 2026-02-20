@@ -43,7 +43,7 @@ unless ENV['NET_SSH_NO_ED25519']
 
     def test_in_file_with_password
       Dir.mktmpdir do |dir|
-        ssh_keygen "#{dir}/id_rsa_ed25519", "ed25519"
+        ssh_keygen "#{dir}/id_rsa_ed25519", "ed25519", "pwd"
         set_authorized_key('net_ssh_1', "#{dir}/id_rsa_ed25519.pub")
 
         # TODO: fix bug in net ssh which reads public key even if private key is there
