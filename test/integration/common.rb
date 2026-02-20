@@ -24,9 +24,18 @@ module IntegrationTestHelpers
     !!(`sshd  -v 2>&1 |grep 'OpenSSH_'` =~ /OpenSSH_8./)
   end
 
-  def ssh_keygen(file, type = 'rsa', password = '')
+  def ssh_keygen(file, type = 'rsa', password = '', cipher = nil)
     sh "rm -rf #{file} #{file}.pub"
-    sh "ssh-keygen #{ssh_keygen_format} -q -f #{file} -t #{type} -N '#{password}'"
+    cmd_words = [
+      'ssh-keygen',
+      ssh_keygen_format,
+      '-q',
+      '-f', file,
+      '-t', type,
+      '-N', "'#{password}'"
+    ]
+    cmd_words += ['-Z', cipher] if cipher
+    sh cmd_words.join(' ')
   end
 
   def ssh_keygen_format
