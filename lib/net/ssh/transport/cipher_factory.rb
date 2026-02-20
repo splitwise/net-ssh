@@ -30,6 +30,10 @@ module Net
           "aes128-ctr" => ::OpenSSL::Cipher.ciphers.include?("aes-128-ctr") ? "aes-128-ctr" : "aes-128-ecb",
           'cast128-ctr' => 'cast5-ecb',
 
+          'aes128-gcm@openssh.com' => 'aes-128-gcm',
+          'aes256-gcm@openssh.com' => 'aes-256-gcm',
+          'chacha20-poly1305@openssh.com' => 'chacha20-poly1305',
+
           'none' => 'none'
         }
 

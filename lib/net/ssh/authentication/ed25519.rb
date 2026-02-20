@@ -80,9 +80,31 @@ module Net
               key = '\x00' * (keylen + ivlen)
             end
 
-            cipher = CipherFactory.get(ciphername, key: key[0...keylen], iv: key[keylen...keylen + ivlen], decrypt: true)
+            if ciphername == 'none'
+              cipher = Transport::IdentityCipher
+            else
+              cipher = OpenSSL::Cipher.new(CipherFactory::SSH_TO_OSSL[ciphername])
+              cipher.decrypt
+              cipher.key = key[0...keylen]
+              cipher.iv  = key[keylen...keylen + ivlen]
+              cipher.padding = 0
+            end
 
-            decoded = cipher.update(buffer.remainder_as_buffer.to_s)
+            encrypted_data = buffer.remainder_as_buffer.to_s
+
+            # TODO: test with chacha poly
+            decoded = if cipher.authenticated?
+                        # tested with GCM
+                        ciphertext = encrypted_data[0...-16]
+                        auth_tag = encrypted_data[-16..]
+                        cipher.auth_tag = auth_tag
+                        cipher.auth_data = ''
+                        cipher.update(ciphertext)
+                      else
+                        # tested with CBC
+                        cipher.update(encrypted_data)
+                      end
+
             decoded << cipher.final
 
             decoded = Net::SSH::Buffer.new(decoded)

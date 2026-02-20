@@ -111,6 +111,10 @@ module Net
         def self.key_length
           64
         end
+
+        def self.iv_len
+          12
+        end
       end
     end
   end
