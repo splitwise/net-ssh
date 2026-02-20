@@ -100,7 +100,11 @@ module Net
         # if :iv_len option is supplied the third return value will be ivlen
         def self.get_lengths(name, options = {})
           klass = SSH_TO_CLASS[name]
-          return [klass.key_length, klass.block_size] unless klass.nil?
+          unless klass.nil?
+            result = [klass.key_length, klass.block_size]
+            result << klass.iv_len if options[:iv_len]
+            return result
+          end
 
           ossl_name = SSH_TO_OSSL[name]
           if ossl_name.nil? || ossl_name == "none"
