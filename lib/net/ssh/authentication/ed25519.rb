@@ -64,26 +64,29 @@ module Net
 
             len = buffer.read_long
 
-            keylen, blocksize, ivlen = CipherFactory.get_lengths(ciphername, iv_len: true)
-            raise ArgumentError.new("Private key len:#{len} is not a multiple of #{blocksize}") if
-              ((len < blocksize) || ((blocksize > 0) && (len % blocksize) != 0))
-
-            if kdfname == 'bcrypt'
-              salt = kdfopts.read_string
-              rounds = kdfopts.read_long
-
-              raise "BCryptPbkdf is not implemented for jruby" if RUBY_PLATFORM == "java"
-
-              key = BCryptPbkdf::key(password, salt, keylen + ivlen, rounds)
-              raise DecryptError.new("BCyryptPbkdf failed", encrypted_key: true) unless key
-            else
-              key = '\x00' * (keylen + ivlen)
-            end
-
             if ciphername == 'none'
               cipher = Transport::IdentityCipher
             else
               cipher = OpenSSL::Cipher.new(CipherFactory::SSH_TO_OSSL[ciphername])
+              keylen = cipher.key_len
+              ivlen = cipher.iv_len
+              blocksize = cipher.block_size
+
+              raise ArgumentError.new("Private key len:#{len} is not a multiple of #{blocksize}") if
+                ((len < blocksize) || ((blocksize > 0) && (len % blocksize) != 0))
+
+              if kdfname == 'bcrypt'
+                salt = kdfopts.read_string
+                rounds = kdfopts.read_long
+
+                raise "BCryptPbkdf is not implemented for jruby" if RUBY_PLATFORM == "java"
+
+                key = BCryptPbkdf::key(password, salt, keylen + ivlen, rounds)
+                raise DecryptError.new("BCryptPbkdf failed", encrypted_key: true) unless key
+              else
+                key = '\x00' * (keylen + ivlen)
+              end
+
               cipher.decrypt
               cipher.key = key[0...keylen]
               cipher.iv  = key[keylen...keylen + ivlen]
@@ -94,14 +97,12 @@ module Net
 
             # TODO: test with chacha poly
             decoded = if cipher.authenticated?
-                        # tested with GCM
                         ciphertext = encrypted_data[0...-16]
                         auth_tag = encrypted_data[-16..]
                         cipher.auth_tag = auth_tag
                         cipher.auth_data = ''
                         cipher.update(ciphertext)
                       else
-                        # tested with CBC
                         cipher.update(encrypted_data)
                       end
 

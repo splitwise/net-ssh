@@ -49,11 +49,11 @@ unless ENV['NET_SSH_NO_ED25519']
         key = <<~PRIVATEKEY
           -----BEGIN OPENSSH PRIVATE KEY-----
           b3BlbnNzaC1rZXktdjEAAAAAHWNoYWNoYTIwLXBvbHkxMzA1QG9wZW5zc2guY29tAAAABm
-          JjcnlwdAAAABgAAAAQYf8G9VsDZqFN+GKW7A0XewAAABgAAAABAAAAMwAAAAtzc2gtZWQy
-          NTUxOQAAACAF+rfLEozMyDub+8gOsb+WssHKSzh+5ffWiyKC3efLfQAAAJDcniGJhUGXaK
-          A7v6DMkskqZA70Sqs1Pjz4ahZ6uBXImAHk04VYskUkcD9FW6GkevWrQA69stLQcmMvuS1Y
-          AyrWopSzwJ0HEZj55b5mnjH8Iob0jPVjAuf5vtjfFeb/rncVgprs6AtEVItgIwZ+LoJTLN
-          yytSz1DNyO0oyZiowww6RMmr3lNjPHNtB71X4XZ3jDo7ySUF24MKmdsPiOjc+R
+          JjcnlwdAAAABgAAAAQgMsN42jlw2C+pMgTPx+suAAAABgAAAABAAAAMwAAAAtzc2gtZWQy
+          NTUxOQAAACCHThbU/SJU7ntvbok6ANB0ob4Q36gXQxUj40PDGJGw4AAAAJADmcQtG5SDxI
+          srhPwRMOUvwK3niQ6R/vxuHrAXiCt9oMymG2ALOmt08no/MVgxeQwKGGFgSzVjFaq6Nyzg
+          yWA5df/AxUK72z7cqUaGzyMWQ+N4pC1q5pOINIiDxtjUTgo2Nv3ZbNV8EBGeDYX95iTN5G
+          YHeAFEd6hZKLOSMUDcKdj1vkZClWTHZBNJtIg4a4ZlQ8/mSJCf7TBv9z1ibaOh
           -----END OPENSSH PRIVATE KEY-----
         PRIVATEKEY
         pwd = 'test'
