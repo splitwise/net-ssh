@@ -116,7 +116,7 @@ module Net
             # N_MIN       minimum nonce (IV) length        12 octets
             # N_MAX       maximum nonce (IV) length        12 octets
             #
-            def iv_len
+            def self.iv_len
               12
             end
 

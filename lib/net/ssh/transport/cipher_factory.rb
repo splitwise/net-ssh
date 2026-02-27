@@ -30,6 +30,10 @@ module Net
           "aes128-ctr" => ::OpenSSL::Cipher.ciphers.include?("aes-128-ctr") ? "aes-128-ctr" : "aes-128-ecb",
           'cast128-ctr' => 'cast5-ecb',
 
+          'aes128-gcm@openssh.com' => 'aes-128-gcm',
+          'aes256-gcm@openssh.com' => 'aes-256-gcm',
+          'chacha20-poly1305@openssh.com' => 'chacha20-poly1305',
+
           'none' => 'none'
         }
 
@@ -100,7 +104,11 @@ module Net
         # if :iv_len option is supplied the third return value will be ivlen
         def self.get_lengths(name, options = {})
           klass = SSH_TO_CLASS[name]
-          return [klass.key_length, klass.block_size] unless klass.nil?
+          unless klass.nil?
+            result = [klass.key_length, klass.block_size]
+            result << klass.iv_len if options[:iv_len]
+            return result
+          end
 
           ossl_name = SSH_TO_OSSL[name]
           if ossl_name.nil? || ossl_name == "none"

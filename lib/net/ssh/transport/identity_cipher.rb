@@ -58,6 +58,10 @@ module Net
           def implicit_mac?
             false
           end
+
+          def authenticated?
+            false
+          end
         end
       end
     end

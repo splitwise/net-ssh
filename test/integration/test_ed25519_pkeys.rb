@@ -43,7 +43,22 @@ unless ENV['NET_SSH_NO_ED25519']
 
     def test_in_file_with_password
       Dir.mktmpdir do |dir|
-        ssh_keygen "#{dir}/id_rsa_ed25519", "ed25519"
+        ssh_keygen "#{dir}/id_rsa_ed25519", "ed25519", "pwd"
+        set_authorized_key('net_ssh_1', "#{dir}/id_rsa_ed25519.pub")
+
+        # TODO: fix bug in net ssh which reads public key even if private key is there
+        sh "mv #{dir}/id_rsa_ed25519.pub #{dir}/id_rsa_ed25519.pub.hidden"
+
+        ret = Net::SSH.start("localhost", "net_ssh_1", { keys: "#{dir}/id_rsa_ed25519", passphrase: 'pwd' }) do |ssh|
+          ssh.exec! 'echo "hello from:$USER"'
+        end
+        assert_equal "hello from:net_ssh_1\n", ret
+      end
+    end
+
+    def test_in_file_with_password
+      Dir.mktmpdir do |dir|
+        ssh_keygen "#{dir}/id_rsa_ed25519", "ed25519", "pwd", "aes256-gcm@openssh.com"
         set_authorized_key('net_ssh_1', "#{dir}/id_rsa_ed25519.pub")
 
         # TODO: fix bug in net ssh which reads public key even if private key is there
